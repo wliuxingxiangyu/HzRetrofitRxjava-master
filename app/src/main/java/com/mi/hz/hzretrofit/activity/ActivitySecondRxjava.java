@@ -33,6 +33,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
+import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 /**
@@ -54,7 +55,7 @@ public class ActivitySecondRxjava extends BaseListActivity<Bean> {
 
     @Override
     protected void setUpTitle(int titleResId) {
-        titleResId = R.string.action_bar_get_title;
+        titleResId = R.string.action_bar_get_rxjava_title;
         super.setUpTitle(titleResId);
     }
 
@@ -107,35 +108,38 @@ public class ActivitySecondRxjava extends BaseListActivity<Bean> {
             page = 1;
         }
 
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("http://gank.io/")
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
 
-        ApiService api = retrofit.create(ApiService.class);
-        useRxjava(api, action);
+        useRxjava(action);
 
     }
 
-    private void useRxjava(ApiService apiService, final int action) {
-        Observable<Response<BaseModel<ArrayList<Bean>>>> observable = apiService.listBeanRxjava(mType, 20, page++);
+    private void useRxjava(final int action) {
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl("http://gank.io/")
+                .addConverterFactory(GsonConverterFactory.create())
+                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+                .build();
+
+        ApiService apiService = retrofit.create(ApiService.class);
+
+        Observable<Response<ArrayList<Bean>>> observable = apiService.listBeanRxjava(mType, 20, page++);
         Log.d("hz--", TAG + ",page=" + page + ",mType=" + mType);
 
         observable.subscribeOn(Schedulers.io()).unsubscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Subscriber<Response<BaseModel<ArrayList<Bean>>>>() {
+                .subscribe(new Subscriber<Response<ArrayList<Bean>>>() {
                                @Override
-                               public void onNext(Response<BaseModel<ArrayList<Bean>>> response) {
+                               public void onNext(Response<ArrayList<Bean>> response) {
                                    if (action == PullRefreshLayout.ACTION_PULL_TO_REFRESH) {
                                        Log.d("hz--", TAG + ",加载--刷新--mDataList.clear()");
                                        mDataList.clear();
                                    }
 
-                                   if (response.body().results == null || response.body().results.size() == 0) {
+                                   if (response.code() != 200 || response.body().size() == 0) {
                                        recycler.enableLoadMore(false);
                                    } else {
-                                       Log.d("hz--", TAG + ",加载更多-response.body().results=" + response.body().results.toString());
+                                       Log.d("hz--", TAG + ",加载更多-response.body().results=" + response.body().toString());
                                        recycler.enableLoadMore(true);
-                                       mDataList.addAll(response.body().results);
+                                       mDataList.addAll(response.body());
                                        adapter.notifyDataSetChanged();
                                    }
 

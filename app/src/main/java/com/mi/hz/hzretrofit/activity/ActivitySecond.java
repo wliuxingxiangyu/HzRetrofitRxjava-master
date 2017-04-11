@@ -49,7 +49,7 @@ public class ActivitySecond extends BaseListActivity<Bean> {
 
     @Override
     protected void setUpTitle(int titleResId) {
-        titleResId = R.string.action_bar_get_title;
+        titleResId = R.string.action_bar_get_normal_title;
         super.setUpTitle(titleResId);
     }
 

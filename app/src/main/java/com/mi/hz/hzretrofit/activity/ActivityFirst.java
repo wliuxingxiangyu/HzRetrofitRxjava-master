@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 
 import com.mi.hz.hzretrofit.R;
 
@@ -16,7 +17,10 @@ public class ActivityFirst extends Activity implements View.OnClickListener {
         setContentView(R.layout.activity_first);
         findViewById(R.id.btn_start_load_welfare).setOnClickListener(this);
         findViewById(R.id.btn_start_load_android).setOnClickListener(this);
-        findViewById(R.id.btn_start_load_all).setOnClickListener(this);
+        Button buttonNormal =(Button)findViewById(R.id.btn_start_load_all);
+        buttonNormal.setText("btn_get_by_callback");
+        buttonNormal.setOnClickListener(this);
+
         findViewById(R.id.btn_post).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -26,7 +30,9 @@ public class ActivityFirst extends Activity implements View.OnClickListener {
             }
         });
 
-        findViewById(R.id.btn_get_rxjava).setOnClickListener(new View.OnClickListener() {
+        Button buttonRx =(Button)findViewById(R.id.btn_get_rxjava);
+        buttonRx.setText("btn_get_by_rxjava");
+        buttonRx.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent in = new Intent();
