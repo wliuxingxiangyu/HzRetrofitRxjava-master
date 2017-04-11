@@ -128,29 +128,27 @@ public class ActivitySecondRxjava extends BaseListActivity<Bean> {
 
         Observable<ArrayList<Bean>> myObserve = Observable.create(new Observable.OnSubscribe<ArrayList<Bean>>() {
             @Override
-            public void call(Subscriber<? super ArrayList<Bean>> subscriber) {
-                try {
+            public void call(final Subscriber<? super ArrayList<Bean>> subscriber) {
                     //enqueue是异步
-//                    Response<ArrayList<Bean>> response = call.enqueue(new Callback<ArrayList<Bean>>() {
-//                        @Override
-//                        public void onResponse(Call<ArrayList<Bean>> call, Response<ArrayList<Bean>> response) {
-//
-//                        }
-//
-//                        @Override
-//                        public void onFailure(Call<ArrayList<Bean>> call, Throwable t) {
-//
-//                        }
-//                    });
-                    //execute是同步
-                    Response<ArrayList<Bean>> response = call.execute();
-                    Log.d("hz--", TAG + ",onNext-前-response.body()=" + response.body().toString());
-                    subscriber.onNext(response.body());
-                    subscriber.onCompleted();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    subscriber.onError(e);
-                }
+                     call.enqueue(new Callback<ArrayList<Bean>>() {
+
+                        @Override
+                        public void onResponse(Call<ArrayList<Bean>> call, Response<ArrayList<Bean>> response) {
+                            Log.d("hz--", TAG + ",onNext-前-response.body()=" + response.body().toString());
+                            subscriber.onNext(response.body());
+                            subscriber.onCompleted();
+                        }
+
+                        @Override
+                        public void onFailure(Call<ArrayList<Bean>> call, Throwable t) {
+                            Log.d("hz--", TAG + ",onNext-前-response.body()=" + t.toString());
+                        }
+                    });
+//                    //execute是同步
+//                    Response<ArrayList<Bean>> response = call.execute();
+//                    Log.d("hz--", TAG + ",onNext-前-response.body()=" + response.body().toString());
+//                    subscriber.onNext(response.body());
+//                    subscriber.onCompleted();
             }
         });
 
