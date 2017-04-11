@@ -25,7 +25,7 @@ public  interface ApiService {
     );
 
     @GET("api/data/{type}/{pageCount}/{pageIndex}")
-    Observable<Response<ArrayList<Bean>>> listBeanRxjava(
+    Call<ArrayList<Bean>> listBeanRxjava(
             @Path("type") String type,
             @Path("pageCount") int pageCount,
             @Path("pageIndex") int pageIndex

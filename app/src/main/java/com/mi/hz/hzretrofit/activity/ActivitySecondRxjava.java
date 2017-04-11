@@ -27,6 +27,7 @@ import com.mi.hz.hzretrofit.model.Bean;
 import com.mi.hz.hzretrofit.pullrefresh.ILayoutManager;
 import com.mi.hz.hzretrofit.pullrefresh.PullRefreshLayout;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 import retrofit2.Call;
@@ -43,7 +44,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class ActivitySecondRxjava extends BaseListActivity<Bean> {
     private int random;
     private int page = 1;
-    private static final String TAG = "ActivitySecond";
+    private static final String TAG = "ActivitySecondRxjava";
     private String mType;
 
 //    @Override
@@ -122,24 +123,53 @@ public class ActivitySecondRxjava extends BaseListActivity<Bean> {
 
         ApiService apiService = retrofit.create(ApiService.class);
 
-        Observable<Response<ArrayList<Bean>>> observable = apiService.listBeanRxjava(mType, 20, page++);
+        final Call<ArrayList<Bean>> call = apiService.listBeanRxjava(mType, 20, page++);
         Log.d("hz--", TAG + ",page=" + page + ",mType=" + mType);
 
-        observable.subscribeOn(Schedulers.io()).unsubscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Subscriber<Response<ArrayList<Bean>>>() {
+        Observable<ArrayList<Bean>> myObserve = Observable.create(new Observable.OnSubscribe<ArrayList<Bean>>() {
+            @Override
+            public void call(Subscriber<? super ArrayList<Bean>> subscriber) {
+                try {
+                    //enqueue是异步
+//                    Response<ArrayList<Bean>> response = call.enqueue(new Callback<ArrayList<Bean>>() {
+//                        @Override
+//                        public void onResponse(Call<ArrayList<Bean>> call, Response<ArrayList<Bean>> response) {
+//
+//                        }
+//
+//                        @Override
+//                        public void onFailure(Call<ArrayList<Bean>> call, Throwable t) {
+//
+//                        }
+//                    });
+                    //execute是同步
+                    Response<ArrayList<Bean>> response = call.execute();
+                    Log.d("hz--", TAG + ",onNext-前-response.body()=" + response.body().toString());
+                    subscriber.onNext(response.body());
+                    subscriber.onCompleted();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    subscriber.onError(e);
+                }
+            }
+        });
+
+        myObserve.subscribeOn(Schedulers.io()).unsubscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Subscriber<ArrayList<Bean>>() {
                                @Override
-                               public void onNext(Response<ArrayList<Bean>> response) {
+                               public void onNext(ArrayList<Bean> response) {
+                                   Log.d("hz--", TAG + ",onNexton中-response.body()=" + response.toString());
                                    if (action == PullRefreshLayout.ACTION_PULL_TO_REFRESH) {
                                        Log.d("hz--", TAG + ",加载--刷新--mDataList.clear()");
                                        mDataList.clear();
                                    }
 
-                                   if (response.code() != 200 || response.body().size() == 0) {
+                                   if (response == null || response.size() == 0) {
                                        recycler.enableLoadMore(false);
                                    } else {
-                                       Log.d("hz--", TAG + ",加载更多-response.body().results=" + response.body().toString());
+                                       Log.d("hz--", TAG + ",加载更多-response.body().results=" + response.toString());
                                        recycler.enableLoadMore(true);
-                                       mDataList.addAll(response.body());
+                                       mDataList.addAll(response);
                                        adapter.notifyDataSetChanged();
                                    }
 
