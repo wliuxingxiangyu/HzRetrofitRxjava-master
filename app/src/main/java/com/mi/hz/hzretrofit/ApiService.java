@@ -25,7 +25,7 @@ public  interface ApiService {
     );
 
     @GET("api/data/{type}/{pageCount}/{pageIndex}")
-    Call<ArrayList<Bean>> listBeanRxjava(
+    Call<BaseModel<ArrayList<Bean>>> listBeanRxjava(
             @Path("type") String type,
             @Path("pageCount") int pageCount,
             @Path("pageIndex") int pageIndex

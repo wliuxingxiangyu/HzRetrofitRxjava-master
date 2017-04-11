@@ -123,34 +123,37 @@ public class ActivitySecondRxjava extends BaseListActivity<Bean> {
 
         ApiService apiService = retrofit.create(ApiService.class);
 
-        final Call<ArrayList<Bean>> call = apiService.listBeanRxjava(mType, 20, page++);
+        final Call<BaseModel<ArrayList<Bean>>> call = apiService.listBeanRxjava(mType, 20, page++);
         Log.d("hz--", TAG + ",page=" + page + ",mType=" + mType);
 
         Observable<ArrayList<Bean>> myObserve = Observable.create(new Observable.OnSubscribe<ArrayList<Bean>>() {
-            @Override
-            public void call(final Subscriber<? super ArrayList<Bean>> subscriber) {
-                    //enqueue是异步
-                     call.enqueue(new Callback<ArrayList<Bean>>() {
+                @Override
+                public void call(Subscriber<? super ArrayList<Bean>> subscriber) {
+                    try {
+                        //enqueue是异步
+//                    Response<ArrayList<Bean>> response = call.enqueue(new Callback<ArrayList<Bean>>() {
+//                        @Override
+//                        public void onResponse(Call<ArrayList<Bean>> call, Response<ArrayList<Bean>> response) {
+//
+//                        }
+//
+//                        @Override
+//                        public void onFailure(Call<ArrayList<Bean>> call, Throwable t) {
+//
+//                        }
+//                    });
+                        //execute是同步
+                        Response<BaseModel<ArrayList<Bean>>> response = call.execute();
 
-                        @Override
-                        public void onResponse(Call<ArrayList<Bean>> call, Response<ArrayList<Bean>> response) {
-                            Log.d("hz--", TAG + ",onNext-前-response.body()=" + response.body().toString());
-                            subscriber.onNext(response.body());
-                            subscriber.onCompleted();
-                        }
-
-                        @Override
-                        public void onFailure(Call<ArrayList<Bean>> call, Throwable t) {
-                            Log.d("hz--", TAG + ",onNext-前-response.body()=" + t.toString());
-                        }
-                    });
-//                    //execute是同步
-//                    Response<ArrayList<Bean>> response = call.execute();
-//                    Log.d("hz--", TAG + ",onNext-前-response.body()=" + response.body().toString());
-//                    subscriber.onNext(response.body());
-//                    subscriber.onCompleted();
-            }
-        });
+                        Log.d("hz--", TAG + ",onNext-前-response.body().results=" + response.body().results.toString());
+                        subscriber.onNext(response.body().results);
+                        subscriber.onCompleted();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                        subscriber.onError(e);
+                    }
+                }
+            });
 
         myObserve.subscribeOn(Schedulers.io()).unsubscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Subscriber<ArrayList<Bean>>() {
