@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">HzRetrofit</string>
+    <string name="title_recycler_activity">我在Activity</string>
+    <string name="action_bar_get_title">get</string>
+</resources>
