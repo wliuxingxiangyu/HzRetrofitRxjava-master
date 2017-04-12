@@ -127,33 +127,26 @@ public class ActivitySecondRxjava extends BaseListActivity<Bean> {
         Log.d("hz--", TAG + ",page=" + page + ",mType=" + mType);
 
         Observable<ArrayList<Bean>> myObserve = Observable.create(new Observable.OnSubscribe<ArrayList<Bean>>() {
-                @Override
-                public void call(Subscriber<? super ArrayList<Bean>> subscriber) {
-                    try {
-                        //enqueue是异步
-//                    Response<ArrayList<Bean>> response = call.enqueue(new Callback<ArrayList<Bean>>() {
-//                        @Override
-//                        public void onResponse(Call<ArrayList<Bean>> call, Response<ArrayList<Bean>> response) {
-//
-//                        }
-//
-//                        @Override
-//                        public void onFailure(Call<ArrayList<Bean>> call, Throwable t) {
-//
-//                        }
-//                    });
-                        //execute是同步
-                        Response<BaseModel<ArrayList<Bean>>> response = call.execute();
-
+            @Override
+            public void call(final Subscriber<? super ArrayList<Bean>> subscriber) {
+                call.enqueue(new Callback<BaseModel<ArrayList<Bean>>>() {
+                    @Override
+                    public void onResponse(Call<BaseModel<ArrayList<Bean>>> call, Response<BaseModel<ArrayList<Bean>>> response) {
                         Log.d("hz--", TAG + ",onNext-前-response.body().results=" + response.body().results.toString());
-                        subscriber.onNext(response.body().results);
-                        subscriber.onCompleted();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                        subscriber.onError(e);
+                        if (response.code() == 200 && response.body().results != null) {
+                            subscriber.onNext(response.body().results);
+                            subscriber.onCompleted();
+                        }
+
                     }
-                }
-            });
+
+                    @Override
+                    public void onFailure(Call<BaseModel<ArrayList<Bean>>> call, Throwable t) {
+
+                    }
+                });
+            }
+        });
 
         myObserve.subscribeOn(Schedulers.io()).unsubscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Subscriber<ArrayList<Bean>>() {
