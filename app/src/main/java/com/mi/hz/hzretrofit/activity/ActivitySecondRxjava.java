@@ -148,7 +148,8 @@ public class ActivitySecondRxjava extends BaseListActivity<Bean> {
             }
         });
 
-        myObserve.subscribeOn(Schedulers.io()).unsubscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
+        myObserve.subscribeOn(Schedulers.io()).unsubscribeOn(Schedulers.io())//订阅IO线程
+                .observeOn(AndroidSchedulers.mainThread())//在主线程中执行，下面的subscribe方法。
                 .subscribe(new Subscriber<ArrayList<Bean>>() {
                                @Override
                                public void onNext(ArrayList<Bean> response) {

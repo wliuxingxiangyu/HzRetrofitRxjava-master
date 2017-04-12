@@ -21,14 +21,18 @@ import com.mi.hz.hzretrofit.model.Bean;
 import com.mi.hz.hzretrofit.pullrefresh.ILayoutManager;
 import com.mi.hz.hzretrofit.pullrefresh.PullRefreshLayout;
 
+import java.io.File;
 import java.util.ArrayList;
 
+import okhttp3.Cache;
+import okhttp3.OkHttpClient;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 import com.bumptech.glide.Glide;
+import com.mi.hz.hzretrofit.LoggingInterceptor;
 
 /**
  * Created by mi on 17-4-8.
@@ -101,18 +105,29 @@ public class ActivitySecond extends BaseListActivity<Bean> {
         if (action == PullRefreshLayout.ACTION_PULL_TO_REFRESH) {
             page = 1;
         }
+        useCall(action);
+    }
+
+    private void useCall(final int action){
+//        OkHttpClient okHttpClient = new OkHttpClient();
+        File cacheFile = new File(this.getCacheDir(), "data/data/hzcahe／hz.xml");
+        Cache cache = new Cache(cacheFile, 1024 * 1024 * 100); //100Mb
+//        okHttpClient.setCache(cache);
+//        okHttpClient.cache();
+        OkHttpClient okHttpClient  = new OkHttpClient.Builder()
+                .cache(cache)
+                .addInterceptor(new LoggingInterceptor())
+                .build();
 
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl("http://gank.io/")
+                .client(okHttpClient)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
+        Log.d("hz--","设置缓存--this.getCacheDir()="+this.getCacheDir());
 
-        ApiService api = retrofit.create(ApiService.class);
-        useCall(api,action);
+        ApiService apiService = retrofit.create(ApiService.class);
 
-    }
-
-    private void useCall(ApiService apiService,final int action){
         Call<BaseModel<ArrayList<Bean>>> call = apiService.listBeanNormal(mType,20, page++);
         Log.d("hz--",TAG+",page="+page+",mType="+mType);
 
