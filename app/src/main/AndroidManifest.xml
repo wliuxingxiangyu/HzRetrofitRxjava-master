@@ -2,8 +2,15 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.mi.hz.hzretrofit">
 
+    <uses-sdk android:minSdkVersion="21" />
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
     <uses-permission android:name="android.permission.INTERNET"/>
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
+    <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE"/>
 
     <application
         android:allowBackup="true"
@@ -20,12 +27,19 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".activity.ActivitySecond"/>
+        <activity android:name=".activity.ActivitySecond" />
 
-        <activity android:name=".activity.ActivitySecondRxjava"/>
-        <activity android:name=".activity.ActivityRxjava"/>
+        <activity android:name=".activity.ActivitySecondRxjava" />
+        <activity android:name=".activity.ActivityRxjava" />
+
+        <service
+            android:name="com.mi.hz.hzretrofit.service.TestJobServices"
+            android:enabled="true"
+            android:exported="true"
+            android:permission="android.permission.BIND_JOB_SERVICE">
+        </service>
+
     </application>
-
 
 
 </manifest>

@@ -36,4 +36,10 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="btn_get_rxjava" />
+
+    <Button
+        android:id="@+id/btn_jobSchedule"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="btn_jobSchedule" />
 </LinearLayout>
