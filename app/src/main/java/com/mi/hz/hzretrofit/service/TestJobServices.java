@@ -16,13 +16,13 @@ public class TestJobServices extends JobService{
 
     @Override
     public boolean onStartJob(JobParameters jobParameters) {
-        Log.d("hz--",TAG+"onStartJob");
+        Log.d("hz--",TAG+"，onStartJob");
         return false;
     }
 
     @Override
     public boolean onStopJob(JobParameters jobParameters) {
-        Log.d("hz--",TAG+"onStopJob");
+        Log.d("hz--",TAG+"，onStopJob");
         return false;
     }
 

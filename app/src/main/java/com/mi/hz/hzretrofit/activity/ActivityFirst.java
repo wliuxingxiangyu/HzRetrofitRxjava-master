@@ -54,6 +54,7 @@ public class ActivityFirst extends Activity implements View.OnClickListener {
         jobScheduleBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                Log.i(TAG, "hz--click点击事件");
                 setJobSchdule();
             }
         });
